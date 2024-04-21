@@ -32,3 +32,35 @@ export const register = async (email, first_name, last_name, password) => {
     },
   };
 };
+
+export const login = async (email, password) => {
+  const user = await User.findOne({ email });
+  //user doesn't exist
+  if (!user) {
+    throw new ErrorWithStatus('email or password incorrect', 400);
+  }
+  //if password is incorrect
+  if (!(await bcrypt.compare(password, user.password))) {
+    throw new ErrorWithStatus('Username or Password is incorrect', 400);
+  }
+
+  //generate token
+
+  const { JWT_SECRET } = process.env;
+  const token = jwt.sign({ email: user.email, sub: user._id }, JWT_SECRET, {
+    expiresIn: '1h',
+  });
+  return {
+    message: 'Login successful',
+    data: {
+      acessToken: token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        updateAt: user.updatedAt,
+        createAt: user.createdAt,
+      },
+    },
+  };
+};
