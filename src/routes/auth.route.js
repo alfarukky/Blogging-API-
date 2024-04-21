@@ -1,13 +1,13 @@
 import { Router } from 'express';
 import * as authController from '../controllers/auth.controller.js';
-import { generateMiddlware } from '../middleware/route.middleware';
+import { generateMiddleWare } from '../middleware/route.middleware.js';
 import { registerSchema } from '../validation/auth.validation.js';
 
 const authRoute = Router();
 
 authRoute.post(
   '/register',
-  generateMiddlware(registerSchema),
+  generateMiddleWare(registerSchema),
   authController.register
 );
 
