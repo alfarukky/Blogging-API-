@@ -9,6 +9,8 @@
 
 ## Overview
 
+_A robust Blogging API allowing users to create, publish, and manage their blogs. Users can sign up, sign in, and utilize JWT authentication with token expiry. The API supports pagination, filtering, searching, and ordering of blogs._
+
 **User Management:**
 1- Users have attributes including first name, last name, email, and password.
 2- Sign up and sign in functionalities are provided.
