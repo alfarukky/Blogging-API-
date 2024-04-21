@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import authRoute from './routes/auth.route.js';
 import errorMiddleware from './middleware/error.middleware.js';
 import logger from './Exception/winston.exception.js';
+import articleRoute from './routes/article.route.js';
 
 dotenv.config();
 const app = express();
@@ -14,6 +15,7 @@ const { PORT } = process.env || 4000;
 //middleware
 app.use(express.json());
 app.use('/api/auth', authRoute);
+app.use('/api/article', articleRoute);
 
 //handle error using winston
 app.use(errorMiddleware);
