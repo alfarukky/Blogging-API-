@@ -84,3 +84,33 @@ export const getOwnersArticle = async (req, res) => {
     res.status(error.status || 500).json({ message: error.message });
   }
 };
+
+export const updateArticle = async (req, res) => {
+  try {
+    const { articleId } = req.params;
+    const userId = req.user.sub;
+    const { title, description, body, tags } = req.body;
+    const result = await useService.updateArticle(
+      userId,
+      articleId,
+      title,
+      description,
+      body,
+      tags
+    );
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message });
+  }
+};
+
+export const deleteArticle = async (req, res) => {
+  const userId = req.user.sub;
+  const { articleId } = req.params;
+  try {
+    const result = await useService.deleteArticle(userId, articleId);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(error.status || 500).json({ mesage: error.message });
+  }
+};

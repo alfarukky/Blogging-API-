@@ -13,5 +13,16 @@ articleRoute.patch(
   authMiddleware,
   useController.updateArticleState
 );
+articleRoute.put(
+  '/:articleId/update',
+  authMiddleware,
+  useController.updateArticle
+);
+
+articleRoute.delete(
+  '/:articleId/delete',
+  authMiddleware,
+  useController.deleteArticle
+);
 
 export default articleRoute;

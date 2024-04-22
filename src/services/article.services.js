@@ -148,3 +148,54 @@ export const getOwnersArticle = async (userId, page, limit, state) => {
     throw new ErrorWithStatus(error, 500);
   }
 };
+
+export const updateArticle = async (
+  userId,
+  articleId,
+  title,
+  description,
+  body,
+  tags
+) => {
+  try {
+    const article = await Article.findOne({ _id: articleId, author: userId });
+    if (!article) {
+      throw new ErrorWithStatus(
+        'Article not found or you are not authorized to edit it',
+        404
+      );
+    }
+    // Update the article
+    article.title = title;
+    article.description = description;
+    article.body = body;
+    article.tags = tags;
+
+    await article.save();
+    return {
+      message: 'Article updated sucessfully',
+      data: article,
+    };
+  } catch (error) {
+    throw new ErrorWithStatus(error, 500);
+  }
+};
+
+export const deleteArticle = async (userId, articleId) => {
+  try {
+    const article = await Article.findOne({ _id: articleId, author: userId });
+    if (!article) {
+      throw new ErrorWithStatus(
+        'Article not found or you are not authorized to delete it',
+        404
+      );
+    }
+    await article.deleteOne();
+    return {
+      message: 'article deleted sucessfully',
+      data: article,
+    };
+  } catch (error) {
+    throw new ErrorWithStatus(error, 500);
+  }
+};
