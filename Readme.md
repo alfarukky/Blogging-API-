@@ -51,7 +51,7 @@ An ERD is created to illustrate the relationships between entities such as users
 
 ## Links
 
-- Live Site URL: [Add live site URL here](https://blogging-api-got9.onrender.com)
+- Live Site URL: [live site URL here](https://blogging-api-got9.onrender.com)
 
 ## Author
 
