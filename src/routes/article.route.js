@@ -5,5 +5,10 @@ import { authMiddleware } from '../middleware/auth.middleware.js';
 const articleRoute = Router();
 
 articleRoute.post('/create', authMiddleware, useController.createArticle);
+articleRoute.patch(
+  '/:articleId/update',
+  authMiddleware,
+  useController.updateArticleState
+);
 
 export default articleRoute;
