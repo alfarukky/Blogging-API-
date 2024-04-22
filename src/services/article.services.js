@@ -1,6 +1,7 @@
 import { ErrorWithStatus } from '../Exception/error-with-status.exception.js';
 import User from '../model/schema/user.schema.js';
 import Article from '../model/schema/article.schema.js';
+import { calculateReadingTime } from '../utils/readingTime.utils.js';
 
 export const createArticle = async (author, title, description, body, tags) => {
   try {
@@ -110,6 +111,10 @@ export const getOneArticle = async (articleId) => {
       throw new ErrorWithStatus('Article not found', 404);
     }
 
+    // Calculate reading time
+    const readingTime = calculateReadingTime(article.body);
+    // Update the reading_time field in the article schema
+    article.reading_time = readingTime;
     //Increment the read_count of the article by 1
     article.read_count += 1;
     await article.save();

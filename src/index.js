@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import authRoute from './routes/auth.route.js';
 import errorMiddleware from './middleware/error.middleware.js';
-import logger from './Exception/winston.exception.js';
+import logger from './utils/winston.exception.js';
 import articleRoute from './routes/article.route.js';
 
 dotenv.config();
