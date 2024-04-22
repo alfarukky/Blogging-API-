@@ -60,3 +60,91 @@ export const updateArticleState = async (userId, articleId, newState) => {
     throw new ErrorWithStatus(error, 500);
   }
 };
+
+export const getArticles = async (
+  page,
+  limit,
+  author,
+  title,
+  tags,
+  sortBy,
+  sortOrder
+) => {
+  try {
+    const query = { state: 'published' };
+    if (author) query.author = author;
+    if (title) query.title = { $regex: title, $options: 'i' }; // Case-insensitive search
+    if (tags) query.tags = { $in: tags.split(',') };
+
+    // Build sort object for ordering
+    let sort = {};
+    if (sortBy && sortOrder) {
+      sort[sortBy] = sortOrder === 'asc' ? 1 : -1;
+    } else {
+      sort = { createdAt: -1 }; // Default sorting by timestamp in descending order
+    }
+
+    // Execute query with pagination and sorting
+    const publishedArticles = await Article.find(query)
+      .sort(sort)
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit));
+    return {
+      message: 'List of published articles',
+      data: publishedArticles,
+    };
+  } catch (error) {
+    throw new ErrorWithStatus(error, 500);
+  }
+};
+
+export const getOneArticle = async (articleId) => {
+  try {
+    // Find the article by its ID
+    const article = await Article.findOne({
+      _id: articleId,
+      state: 'published',
+    });
+
+    if (!article) {
+      throw new ErrorWithStatus('Article not found', 404);
+    }
+
+    //Increment the read_count of the article by 1
+    article.read_count += 1;
+    await article.save();
+
+    // Find the user(author) of the article
+    const author = await User.findById(article.author).select('-password');
+
+    if (!author) {
+      throw new ErrorWithStatus('Author not found', 404);
+    }
+    return {
+      message: 'sucessful',
+      data: {
+        article,
+        author,
+      },
+    };
+  } catch (error) {
+    throw new ErrorWithStatus(error, 500);
+  }
+};
+export const getOwnersArticle = async (userId, page, limit, state) => {
+  try {
+    const query = { author: userId };
+    if (state) query.state = state;
+    // Execute query with pagination
+    const articles = await Article.find(query)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit));
+    return {
+      message: 'sucessful',
+      data: articles,
+    };
+  } catch (error) {
+    throw new ErrorWithStatus(error, 500);
+  }
+};
