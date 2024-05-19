@@ -8,7 +8,7 @@ export const register = async (req, res) => {
       last_name,
       password
     );
-    res.json(result);
+    res.status(200).json(result);
   } catch (err) {
     res.status(err.status || 500).json({ message: err.message });
   }
@@ -18,7 +18,7 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const result = await useServices.login(email, password);
-    res.json(result);
+    res.status(200).json(result);
   } catch (err) {
     res.status(err.status || 500).json({ message: err.message });
   }

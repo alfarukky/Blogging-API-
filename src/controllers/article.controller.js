@@ -20,7 +20,7 @@ export const getArticles = async (req, res) => {
       sortBy,
       sortOrder
     );
-    res.json({ message: 'Get all articles', data: users });
+    res.status(200).json({ message: 'Get all articles', data: users });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -37,7 +37,7 @@ export const createArticle = async (req, res) => {
       body,
       tags
     );
-    res.json(result);
+    res.status(201).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

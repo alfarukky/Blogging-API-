@@ -9,10 +9,10 @@ describe('Auth Controller', () => {
     it('should register a new user with hashed password', async () => {
       const req = {
         body: {
-          name: 'Test User',
+          first_name: 'Test',
+          last_name: 'User',
           email: 'test@example.com',
           password: 'password123',
-          confirmPassword: 'password123',
         },
       };
       const res = {
@@ -27,7 +27,8 @@ describe('Auth Controller', () => {
         message: 'User created successfully',
         data: {
           id: 'user_id',
-          name: 'Test User',
+          first_name: 'Test',
+          last_name: 'User',
           email: 'test@example.com',
           updatedAt: new Date(),
           createdAt: new Date(),
@@ -40,7 +41,8 @@ describe('Auth Controller', () => {
         message: 'User created successfully',
         data: expect.objectContaining({
           id: expect.any(String),
-          name: 'Test User',
+          first_name: 'Test',
+          last_name: 'User',
           email: 'test@example.com',
           updatedAt: expect.any(Date),
           createdAt: expect.any(Date),

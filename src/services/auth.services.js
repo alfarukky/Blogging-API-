@@ -53,7 +53,7 @@ export const login = async (email, password) => {
   return {
     message: 'Login successful',
     data: {
-      acessToken: token,
+      accessToken: token,
       user: {
         id: user._id,
         name: user.name,

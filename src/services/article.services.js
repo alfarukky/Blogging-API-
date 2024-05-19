@@ -3,6 +3,43 @@ import User from '../model/schema/user.schema.js';
 import Article from '../model/schema/article.schema.js';
 import { calculateReadingTime } from '../utils/readingTime.utils.js';
 
+export const getArticles = async (
+  page,
+  limit,
+  author,
+  title,
+  tags,
+  sortBy,
+  sortOrder
+) => {
+  try {
+    const query = { state: 'published' };
+    if (author) query.author = author;
+    if (title) query.title = { $regex: title, $options: 'i' }; // Case-insensitive search
+    if (tags) query.tags = { $in: tags.split(',') };
+
+    // Build sort object for ordering
+    let sort = {};
+    if (sortBy && sortOrder) {
+      sort[sortBy] = sortOrder === 'asc' ? 1 : -1;
+    } else {
+      sort = { createdAt: -1 }; // Default sorting by timestamp in descending order
+    }
+
+    // Execute query with pagination and sorting
+    const publishedArticles = await Article.find(query)
+      .sort(sort)
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit));
+    return {
+      message: 'List of published articles',
+      data: publishedArticles,
+    };
+  } catch (error) {
+    throw new ErrorWithStatus(error, 500);
+  }
+};
+
 export const createArticle = async (author, title, description, body, tags) => {
   try {
     // Find the user by their ID
@@ -56,43 +93,6 @@ export const updateArticleState = async (userId, articleId, newState) => {
     return {
       message: 'Article state updated successfully',
       data: article,
-    };
-  } catch (error) {
-    throw new ErrorWithStatus(error, 500);
-  }
-};
-
-export const getArticles = async (
-  page,
-  limit,
-  author,
-  title,
-  tags,
-  sortBy,
-  sortOrder
-) => {
-  try {
-    const query = { state: 'published' };
-    if (author) query.author = author;
-    if (title) query.title = { $regex: title, $options: 'i' }; // Case-insensitive search
-    if (tags) query.tags = { $in: tags.split(',') };
-
-    // Build sort object for ordering
-    let sort = {};
-    if (sortBy && sortOrder) {
-      sort[sortBy] = sortOrder === 'asc' ? 1 : -1;
-    } else {
-      sort = { createdAt: -1 }; // Default sorting by timestamp in descending order
-    }
-
-    // Execute query with pagination and sorting
-    const publishedArticles = await Article.find(query)
-      .sort(sort)
-      .skip((page - 1) * limit)
-      .limit(parseInt(limit));
-    return {
-      message: 'List of published articles',
-      data: publishedArticles,
     };
   } catch (error) {
     throw new ErrorWithStatus(error, 500);
