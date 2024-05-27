@@ -2,9 +2,9 @@ import express from 'express';
 import dotenv from 'dotenv';
 import { limiter } from './middleware/limiter.middleware.js';
 import mongoose from 'mongoose';
+import logger from './utils/winston.utils.js';
 import authRoute from './routes/auth.route.js';
 import errorMiddleware from './middleware/error.middleware.js';
-import logger from './utils/winston.utils.js';
 import articleRoute from './routes/article.route.js';
 
 dotenv.config();

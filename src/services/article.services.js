@@ -2,6 +2,9 @@ import { ErrorWithStatus } from '../Exception/error-with-status.exception.js';
 import User from '../model/schema/user.schema.js';
 import Article from '../model/schema/article.schema.js';
 import { calculateReadingTime } from '../utils/readingTime.utils.js';
+import { getRedisClient } from '../model/connection.js';
+
+const EXPIRATION_TIME = 3600;
 
 export const getArticles = async (
   page,
@@ -10,7 +13,8 @@ export const getArticles = async (
   title,
   tags,
   sortBy,
-  sortOrder
+  sortOrder,
+  originalUrl
 ) => {
   try {
     const query = { state: 'published' };
@@ -31,6 +35,13 @@ export const getArticles = async (
       .sort(sort)
       .skip((page - 1) * limit)
       .limit(parseInt(limit));
+    const client = getRedisClient();
+    client.setEx(
+      originalUrl,
+      EXPIRATION_TIME,
+      JSON.stringify(publishedArticles)
+    );
+
     return {
       message: 'List of published articles',
       data: publishedArticles,
@@ -99,7 +110,7 @@ export const updateArticleState = async (userId, articleId, newState) => {
   }
 };
 
-export const getOneArticle = async (articleId) => {
+export const getOneArticle = async (articleId, originalUrl) => {
   try {
     // Find the article by its ID
     const article = await Article.findOne({
@@ -125,6 +136,9 @@ export const getOneArticle = async (articleId) => {
     if (!author) {
       throw new ErrorWithStatus('Author not found', 404);
     }
+
+    const client = getRedisClient();
+    client.setEx(originalUrl, EXPIRATION_TIME, JSON.stringify(article));
     return {
       message: 'sucessful',
       data: {
@@ -136,7 +150,13 @@ export const getOneArticle = async (articleId) => {
     throw new ErrorWithStatus(error, 500);
   }
 };
-export const getOwnersArticle = async (userId, page, limit, state) => {
+export const getOwnersArticle = async (
+  userId,
+  page,
+  limit,
+  state,
+  originalUrl
+) => {
   try {
     const query = { author: userId };
     if (state) query.state = state;
@@ -145,6 +165,9 @@ export const getOwnersArticle = async (userId, page, limit, state) => {
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(parseInt(limit));
+
+    const client = getRedisClient();
+    client.setEx(originalUrl, EXPIRATION_TIME, JSON.stringify(articles));
     return {
       message: 'sucessful',
       data: articles,
